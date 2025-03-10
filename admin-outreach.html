@@ -15,6 +15,7 @@
             --darker-bg: #1a202c;
             --text-light: #e2e8f0;
             --shadow: rgba(0, 0, 0, 0.3);
+            --divider-color: rgba(52, 152, 219, 0.3);
             --transition: all 0.3s ease;
         }
 
@@ -29,7 +30,6 @@
             flex-direction: column;
         }
 
-        /* Header and Sidebar styles copied from previous pages */
         .header-container {
             background: var(--dark-bg);
             padding: 20px 30px;
@@ -110,15 +110,22 @@
             background: #c53030;
         }
 
+        .main-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
         .sidebar {
             width: 250px;
             background: var(--dark-bg);
             padding: 20px;
             position: fixed;
-            top: 100px;
+            top: 100px; /* Matches header height */
             bottom: 0;
             box-shadow: 2px 0 12px var(--shadow);
             overflow-y: auto;
+            z-index: 900;
         }
 
         .sidebar a {
@@ -138,9 +145,19 @@
             padding-left: 20px;
         }
 
-        /* Content */
+        .divider {
+            width: 4px;
+            background: var(--divider-color);
+            position: fixed;
+            left: 250px; /* Matches sidebar width */
+            top: 100px; /* Matches header height */
+            bottom: 0;
+            z-index: 950;
+            box-shadow: 0 0 10px var(--divider-color);
+        }
+
         .content {
-            margin-left: 250px;
+            margin-left: 254px; /* Sidebar width + divider width */
             padding: 30px;
             flex-grow: 1;
         }
@@ -157,6 +174,11 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 12px var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
         }
 
         .card h3 {
@@ -207,6 +229,11 @@
             border-radius: 10px;
             box-shadow: 0 4px 12px var(--shadow);
             overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .responses-table:hover {
+            transform: translateY(-5px);
         }
 
         .responses-table table {
@@ -258,8 +285,38 @@
         }
 
         @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+                top: 80px;
+            }
+
+            .divider {
+                left: 200px;
+            }
+
+            .content {
+                margin-left: 204px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: static;
+                width: 100%;
+                box-shadow: none;
+            }
+
+            .divider {
+                display: none;
+            }
+
             .content {
                 margin-left: 0;
+                padding: 20px;
             }
 
             .responses-table {
@@ -285,54 +342,56 @@
         </div>
     </div>
 
-    <div class="sidebar">
-        <a href="admin-dashboard.html">Dashboard</a>
-        <a href="admin-users.html">User Management</a>
-        <a href="admin-outreach.html" class="active">Outreach Analytics</a>
-        <a href="admin-support.html">Support Tickets</a>
-        <a href="admin-create.html">Create Admin</a>
-    </div>
-
-    <div class="content">
-        <div class="analytics-grid">
-            <div class="card">
-                <h3>Experience Levels</h3>
-                <canvas id="experienceChart"></canvas>
-            </div>
-            <div class="card">
-                <h3>Understanding Scores</h3>
-                <canvas id="understandingChart"></canvas>
-            </div>
+    <div class="main-container">
+        <div class="sidebar">
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="admin-users.html">User Management</a>
+            <a href="admin-outreach.html" class="active">Outreach Analytics</a>
+            <a href="admin-support.html">Support Tickets</a>
+            <a href="admin-create.html">Create Admin</a>
         </div>
+        <div class="divider"></div>
+        <div class="content">
+            <div class="analytics-grid">
+                <div class="card">
+                    <h3>Experience Levels</h3>
+                    <canvas id="experienceChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3>Understanding Scores</h3>
+                    <canvas id="understandingChart"></canvas>
+                </div>
+            </div>
 
-        <div class="controls">
-            <input type="text" id="search-input" placeholder="Search by email...">
-            <select id="experience-filter">
-                <option value="">All Experience Levels</option>
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-            </select>
-            <button id="export-btn">Export to CSV</button>
-        </div>
+            <div class="controls">
+                <input type="text" id="search-input" placeholder="Search by email...">
+                <select id="experience-filter">
+                    <option value="">All Experience Levels</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+                <button id="export-btn">Export to CSV</button>
+            </div>
 
-        <div class="responses-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Experience</th>
-                        <th>Learning Prefs</th>
-                        <th>Understanding</th>
-                        <th>Interests</th>
-                        <th>Challenges</th>
-                        <th>Goals</th>
-                        <th>Date</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody id="responses-table-body"></tbody>
-            </table>
+            <div class="responses-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Experience</th>
+                            <th>Learning Prefs</th>
+                            <th>Understanding</th>
+                            <th>Interests</th>
+                            <th>Challenges</th>
+                            <th>Goals</th>
+                            <th>Date</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="responses-table-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -342,16 +401,27 @@
         import { auth } from './firebase.js';
         import { db } from './firebase.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js';
-        import { collection, getDocs, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
+        import { collection, getDocs, doc, updateDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
 
-        // Auth check
+        // Auth check and profile update
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const adminDocRef = doc(db, 'Admins', user.uid);
                 const adminDoc = await getDoc(adminDocRef);
                 if (adminDoc.exists() && adminDoc.data().isAdmin) {
-                    document.getElementById('profile-name').textContent = user.email;
-                    document.getElementById('profile-pic').textContent = user.email[0].toUpperCase();
+                    // Fetch user details for profile
+                    const userDocRef = doc(db, 'UserSignUpData', user.uid);
+                    const userDoc = await getDoc(userDocRef);
+                    let firstName = 'Admin';
+                    let lastName = '';
+                    if (userDoc.exists()) {
+                        firstName = userDoc.data().firstName || 'Admin';
+                        lastName = userDoc.data().lastName || '';
+                    }
+                    document.getElementById('profile-name').textContent = `${firstName} ${lastName}`.trim();
+                    document.getElementById('profile-pic').textContent = `${firstName[0]}${lastName ? lastName[0] : ''}`.toUpperCase();
+
+                    // Load analytics
                     loadAnalytics();
                 } else {
                     window.location.href = 'admin-login.html';
@@ -363,107 +433,111 @@
 
         // Load analytics
         async function loadAnalytics(search = '', experienceFilter = '') {
-            const responsesSnapshot = await getDocs(collection(db, 'OutreachResponse'));
-            const responses = responsesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            try {
+                const responsesSnapshot = await getDocs(collection(db, 'OutreachResponse'));
+                const responses = responsesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            // Filter responses
-            const filteredResponses = responses.filter(r => 
-                r.email.toLowerCase().includes(search.toLowerCase()) &&
-                (!experienceFilter || r.experience === experienceFilter)
-            );
+                // Filter responses
+                const filteredResponses = responses.filter(r => 
+                    r.email.toLowerCase().includes(search.toLowerCase()) &&
+                    (!experienceFilter || r.experience === experienceFilter)
+                );
 
-            // Experience Chart
-            const experienceCounts = filteredResponses.reduce((acc, r) => {
-                acc[r.experience] = (acc[r.experience] || 0) + 1;
-                return acc;
-            }, {});
-            new Chart(document.getElementById('experienceChart'), {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(experienceCounts),
-                    datasets: [{
-                        data: Object.values(experienceCounts),
-                        backgroundColor: ['#3498db', '#27ae60', '#e53e3e']
-                    }]
-                },
-                options: { responsive: true, plugins: { legend: { labels: { color: '#e2e8f0' } } } }
-            });
-
-            // Understanding Chart
-            const understandingCounts = filteredResponses.reduce((acc, r) => {
-                acc[r.understanding] = (acc[r.understanding] || 0) + 1;
-                return acc;
-            }, {});
-            new Chart(document.getElementById('understandingChart'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(understandingCounts).sort((a, b) => a - b),
-                    datasets: [{
-                        label: 'Understanding Score',
-                        data: Object.values(understandingCounts),
-                        backgroundColor: '#3498db'
-                    }]
-                },
-                options: { 
-                    responsive: true, 
-                    scales: { 
-                        x: { ticks: { color: '#e2e8f0' } }, 
-                        y: { ticks: { color: '#e2e8f0' }, beginAtZero: true } 
+                // Experience Chart
+                const experienceCounts = filteredResponses.reduce((acc, r) => {
+                    acc[r.experience] = (acc[r.experience] || 0) + 1;
+                    return acc;
+                }, {});
+                new Chart(document.getElementById('experienceChart'), {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(experienceCounts),
+                        datasets: [{
+                            data: Object.values(experienceCounts),
+                            backgroundColor: ['#3498db', '#27ae60', '#e53e3e']
+                        }]
                     },
-                    plugins: { legend: { labels: { color: '#e2e8f0' } } }
-                }
-            });
+                    options: { responsive: true, plugins: { legend: { labels: { color: '#e2e8f0' } } } }
+                });
 
-            // Table
-            const tbody = document.getElementById('responses-table-body');
-            tbody.innerHTML = '';
-            filteredResponses.forEach(r => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${r.email}</td>
-                    <td>${r.experience}</td>
-                    <td>${r.learningPreferences.join(', ')}</td>
-                    <td>${r.understanding}</td>
-                    <td>${r.interests.join(', ')}</td>
-                    <td>${r.challenges}</td>
-                    <td>${r.goals}</td>
-                    <td>${new Date(r.timestamp).toLocaleDateString()}</td>
-                    <td><textarea class="notes-input" data-id="${r.id}" placeholder="Add notes...">${r.notes || ''}</textarea></td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // Notes event listeners
-            document.querySelectorAll('.notes-input').forEach(input => {
-                input.addEventListener('blur', async (e) => {
-                    const id = e.target.dataset.id;
-                    const notes = e.target.value.trim();
-                    try {
-                        await updateDoc(doc(db, 'OutreachResponse', id), { notes });
-                        showSuccess('Notes saved!');
-                    } catch (error) {
-                        console.error('Error saving notes:', error.message);
-                        alert('Failed to save notes: ' + error.message);
+                // Understanding Chart
+                const understandingCounts = filteredResponses.reduce((acc, r) => {
+                    acc[r.understanding] = (acc[r.understanding] || 0) + 1;
+                    return acc;
+                }, {});
+                new Chart(document.getElementById('understandingChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(understandingCounts).sort((a, b) => a - b),
+                        datasets: [{
+                            label: 'Understanding Score',
+                            data: Object.values(understandingCounts),
+                            backgroundColor: '#3498db'
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        scales: { 
+                            x: { ticks: { color: '#e2e8f0' } }, 
+                            y: { ticks: { color: '#e2e8f0' }, beginAtZero: true } 
+                        },
+                        plugins: { legend: { labels: { color: '#e2e8f0' } } }
                     }
                 });
-            });
 
-            // Export to CSV
-            document.getElementById('export-btn').onclick = () => {
-                const csv = [
-                    'Email,Experience,Learning Preferences,Understanding,Interests,Challenges,Goals,Timestamp,Notes',
-                    ...filteredResponses.map(r => 
-                        `"${r.email}","${r.experience}","${r.learningPreferences.join('; ')}","${r.understanding}","${r.interests.join('; ')}","${r.challenges.replace(/"/g, '""')}","${r.goals.replace(/"/g, '""')}","${r.timestamp}","${r.notes || ''}"`
-                    )
-                ].join('\n');
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'outreach_responses.csv';
-                a.click();
-                URL.revokeObjectURL(url);
-            };
+                // Table
+                const tbody = document.getElementById('responses-table-body');
+                tbody.innerHTML = '';
+                filteredResponses.forEach(r => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${r.email || 'N/A'}</td>
+                        <td>${r.experience || 'N/A'}</td>
+                        <td>${r.learningPreferences ? r.learningPreferences.join(', ') : 'N/A'}</td>
+                        <td>${r.understanding || 'N/A'}</td>
+                        <td>${r.interests ? r.interests.join(', ') : 'N/A'}</td>
+                        <td>${r.challenges || 'N/A'}</td>
+                        <td>${r.goals || 'N/A'}</td>
+                        <td>${r.timestamp ? new Date(r.timestamp).toLocaleDateString() : 'N/A'}</td>
+                        <td><textarea class="notes-input" data-id="${r.id}" placeholder="Add notes...">${r.notes || ''}</textarea></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // Notes event listeners
+                document.querySelectorAll('.notes-input').forEach(input => {
+                    input.addEventListener('blur', async (e) => {
+                        const id = e.target.dataset.id;
+                        const notes = e.target.value.trim();
+                        try {
+                            await updateDoc(doc(db, 'OutreachResponse', id), { notes });
+                            showSuccess('Notes saved!');
+                        } catch (error) {
+                            console.error('Error saving notes:', error.message);
+                            alert('Failed to save notes: ' + error.message);
+                        }
+                    });
+                });
+
+                // Export to CSV
+                document.getElementById('export-btn').onclick = () => {
+                    const csv = [
+                        'Email,Experience,Learning Preferences,Understanding,Interests,Challenges,Goals,Timestamp,Notes',
+                        ...filteredResponses.map(r => 
+                            `"${r.email || 'N/A'}","${r.experience || 'N/A'}","${r.learningPreferences ? r.learningPreferences.join('; ') : 'N/A'}","${r.understanding || 'N/A'}","${r.interests ? r.interests.join('; ') : 'N/A'}","${r.challenges ? r.challenges.replace(/"/g, '""') : 'N/A'}","${r.goals ? r.goals.replace(/"/g, '""') : 'N/A'}","${r.timestamp || 'N/A'}","${r.notes || ''}"`
+                        )
+                    ].join('\n');
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'outreach_responses.csv';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
+            } catch (error) {
+                console.error('Error loading analytics:', error.message);
+            }
         }
 
         // Search and filter
