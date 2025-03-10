@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support Tickets | Data Safari Academy</title>
+    <title>Outreach Analytics | Data Safari Academy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@300&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMyAydjE4aDE4VjJIM1ptMTUgMTZoLTFWMTBoMVYxNlpNMTMgMTZoLTFWOGgxVjE2Wk0xMSAxNmgxVjZhMVYxNlpNOSAxNmgxVjRhMVYxNlpNNyAxNmgxVjhoMVYxNlpNNSAxNmgxVjZhMVYxNiIgc3Ryb2tlPSIjMzQ5OERCIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=">
@@ -159,32 +159,37 @@
         .content {
             margin-left: 254px; /* Sidebar width + divider width */
             padding: 30px;
-            flex: 1;
+            flex-grow: 1;
         }
 
-        .visualization-card {
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
             background: var(--dark-bg);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 12px var(--shadow);
-            margin-bottom: 30px;
             transition: transform 0.3s;
         }
 
-        .visualization-card:hover {
+        .card:hover {
             transform: translateY(-5px);
         }
 
-        .visualization-card h3 {
+        .card h3 {
             font-family: 'Poppins', sans-serif;
             font-size: 18px;
             color: var(--primary-color);
             margin: 0 0 15px 0;
         }
 
-        .visualization-card canvas {
-            max-width: 400px;
-            margin: 0 auto;
+        .card canvas {
+            max-width: 100%;
         }
 
         .controls {
@@ -194,7 +199,7 @@
             flex-wrap: wrap;
         }
 
-        .controls select {
+        .controls input, .controls select {
             padding: 10px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 5px;
@@ -203,7 +208,22 @@
             font-size: 14px;
         }
 
-        .support-table {
+        .controls button {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.3s;
+        }
+
+        .controls button:hover {
+            background: #2980b9;
+        }
+
+        .responses-table {
             width: 100%;
             background: var(--dark-bg);
             border-radius: 10px;
@@ -212,37 +232,39 @@
             transition: transform 0.3s;
         }
 
-        .support-table:hover {
+        .responses-table:hover {
             transform: translateY(-5px);
         }
 
-        .support-table table {
+        .responses-table table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .support-table th, .support-table td {
+        .responses-table th, .responses-table td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .support-table th {
+        .responses-table th {
             background: var(--primary-color);
             font-family: 'Poppins', sans-serif;
             font-size: 16px;
         }
 
-        .support-table td {
+        .responses-table td {
             font-size: 14px;
         }
 
-        .support-table tr:hover {
+        .responses-table tr:hover {
             background: rgba(255, 255, 255, 0.05);
         }
 
-        .status-select {
-            padding: 5px;
+        .notes-input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 5px;
             background: rgba(255, 255, 255, 0.05);
@@ -297,7 +319,7 @@
                 padding: 20px;
             }
 
-            .support-table {
+            .responses-table {
                 overflow-x: auto;
             }
         }
@@ -324,39 +346,50 @@
         <div class="sidebar">
             <a href="admin-dashboard.html">Dashboard</a>
             <a href="admin-users.html">User Management</a>
-            <a href="admin-outreach.html">Outreach Analytics</a>
-            <a href="admin-support.html" class="active">Support Tickets</a>
+            <a href="admin-outreach.html" class="active">Outreach Analytics</a>
+            <a href="admin-support.html">Support Tickets</a>
             <a href="admin-create.html">Create Admin</a>
         </div>
         <div class="divider"></div>
         <div class="content">
-            <div class="visualization-card">
-                <h3>Support Issues by Type</h3>
-                <canvas id="issueTypeChart"></canvas>
+            <div class="analytics-grid">
+                <div class="card">
+                    <h3>Experience Levels</h3>
+                    <canvas id="experienceChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3>Understanding Scores</h3>
+                    <canvas id="understandingChart"></canvas>
+                </div>
             </div>
 
             <div class="controls">
-                <select id="status-filter">
-                    <option value="">All Statuses</option>
-                    <option value="Pending">Pending</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Resolved">Resolved</option>
+                <input type="text" id="search-input" placeholder="Search by email...">
+                <select id="experience-filter">
+                    <option value="">All Experience Levels</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
                 </select>
+                <button id="export-btn">Export to CSV</button>
             </div>
 
-            <div class="support-table">
+            <div class="responses-table">
                 <table>
                     <thead>
                         <tr>
-                            <th>User Email</th>
-                            <th>Type</th>
-                            <th>Subject</th>
-                            <th>Description</th>
+                            <th>Email</th>
+                            <th>Experience</th>
+                            <th>Learning Prefs</th>
+                            <th>Understanding</th>
+                            <th>Interests</th>
+                            <th>Challenges</th>
+                            <th>Goals</th>
                             <th>Date</th>
-                            <th>Status</th>
+                            <th>Notes</th>
                         </tr>
                     </thead>
-                    <tbody id="support-table-body"></tbody>
+                    <tbody id="responses-table-body"></tbody>
                 </table>
             </div>
         </div>
@@ -388,8 +421,8 @@
                     document.getElementById('profile-name').textContent = `${firstName} ${lastName}`.trim();
                     document.getElementById('profile-pic').textContent = `${firstName[0]}${lastName ? lastName[0] : ''}`.toUpperCase();
 
-                    // Load support data
-                    loadSupportData();
+                    // Load analytics
+                    loadAnalytics();
                 } else {
                     window.location.href = 'admin-login.html';
                 }
@@ -398,86 +431,121 @@
             }
         });
 
-        // Load support data and visualization
-        async function loadSupportData(statusFilter = '') {
+        // Load analytics
+        async function loadAnalytics(search = '', experienceFilter = '') {
             try {
-                const supportSnapshot = await getDocs(collection(db, 'UserSupport'));
-                const supportTickets = supportSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const responsesSnapshot = await getDocs(collection(db, 'OutreachResponse'));
+                const responses = responsesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-                // Filter tickets
-                const filteredTickets = supportTickets.filter(ticket => 
-                    !statusFilter || ticket.status === statusFilter
+                // Filter responses
+                const filteredResponses = responses.filter(r => 
+                    r.email.toLowerCase().includes(search.toLowerCase()) &&
+                    (!experienceFilter || r.experience === experienceFilter)
                 );
 
-                // Pie chart for issue types
-                const typeCounts = filteredTickets.reduce((acc, ticket) => {
-                    acc[ticket.type] = (acc[ticket.type] || 0) + 1;
+                // Experience Chart
+                const experienceCounts = filteredResponses.reduce((acc, r) => {
+                    acc[r.experience] = (acc[r.experience] || 0) + 1;
                     return acc;
                 }, {});
-                new Chart(document.getElementById('issueTypeChart'), {
+                new Chart(document.getElementById('experienceChart'), {
                     type: 'pie',
                     data: {
-                        labels: Object.keys(typeCounts),
+                        labels: Object.keys(experienceCounts),
                         datasets: [{
-                            data: Object.values(typeCounts),
-                            backgroundColor: ['#3498db', '#27ae60', '#e53e3e', '#f1c40f'],
+                            data: Object.values(experienceCounts),
+                            backgroundColor: ['#3498db', '#27ae60', '#e53e3e']
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { labels: { color: '#e2e8f0' } } } }
+                });
+
+                // Understanding Chart
+                const understandingCounts = filteredResponses.reduce((acc, r) => {
+                    acc[r.understanding] = (acc[r.understanding] || 0) + 1;
+                    return acc;
+                }, {});
+                new Chart(document.getElementById('understandingChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(understandingCounts).sort((a, b) => a - b),
+                        datasets: [{
+                            label: 'Understanding Score',
+                            data: Object.values(understandingCounts),
+                            backgroundColor: '#3498db'
                         }]
                     },
                     options: { 
                         responsive: true, 
-                        plugins: { 
-                            legend: { 
-                                position: 'bottom',
-                                labels: { color: '#e2e8f0' } 
-                            } 
-                        } 
+                        scales: { 
+                            x: { ticks: { color: '#e2e8f0' } }, 
+                            y: { ticks: { color: '#e2e8f0' }, beginAtZero: true } 
+                        },
+                        plugins: { legend: { labels: { color: '#e2e8f0' } } }
                     }
                 });
 
                 // Table
-                const tbody = document.getElementById('support-table-body');
+                const tbody = document.getElementById('responses-table-body');
                 tbody.innerHTML = '';
-                filteredTickets.forEach(ticket => {
+                filteredResponses.forEach(r => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${ticket.email || 'N/A'}</td>
-                        <td>${ticket.type || 'N/A'}</td>
-                        <td>${ticket.subject || 'N/A'}</td>
-                        <td>${ticket.description || 'N/A'}</td>
-                        <td>${ticket.timestamp ? new Date(ticket.timestamp).toLocaleDateString() : 'N/A'}</td>
-                        <td>
-                            <select class="status-select" data-id="${ticket.id}">
-                                <option value="Pending" ${ticket.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                <option value="In Progress" ${ticket.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                                <option value="Resolved" ${ticket.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
-                            </select>
-                        </td>
+                        <td>${r.email || 'N/A'}</td>
+                        <td>${r.experience || 'N/A'}</td>
+                        <td>${r.learningPreferences ? r.learningPreferences.join(', ') : 'N/A'}</td>
+                        <td>${r.understanding || 'N/A'}</td>
+                        <td>${r.interests ? r.interests.join(', ') : 'N/A'}</td>
+                        <td>${r.challenges || 'N/A'}</td>
+                        <td>${r.goals || 'N/A'}</td>
+                        <td>${r.timestamp ? new Date(r.timestamp).toLocaleDateString() : 'N/A'}</td>
+                        <td><textarea class="notes-input" data-id="${r.id}" placeholder="Add notes...">${r.notes || ''}</textarea></td>
                     `;
                     tbody.appendChild(tr);
                 });
 
-                // Status update listeners
-                document.querySelectorAll('.status-select').forEach(select => {
-                    select.addEventListener('change', async (e) => {
+                // Notes event listeners
+                document.querySelectorAll('.notes-input').forEach(input => {
+                    input.addEventListener('blur', async (e) => {
                         const id = e.target.dataset.id;
-                        const status = e.target.value;
+                        const notes = e.target.value.trim();
                         try {
-                            await updateDoc(doc(db, 'UserSupport', id), { status });
-                            showSuccess('Status updated!');
+                            await updateDoc(doc(db, 'OutreachResponse', id), { notes });
+                            showSuccess('Notes saved!');
                         } catch (error) {
-                            console.error('Error updating status:', error.message);
-                            alert('Failed to update status: ' + error.message);
+                            console.error('Error saving notes:', error.message);
+                            alert('Failed to save notes: ' + error.message);
                         }
                     });
                 });
+
+                // Export to CSV
+                document.getElementById('export-btn').onclick = () => {
+                    const csv = [
+                        'Email,Experience,Learning Preferences,Understanding,Interests,Challenges,Goals,Timestamp,Notes',
+                        ...filteredResponses.map(r => 
+                            `"${r.email || 'N/A'}","${r.experience || 'N/A'}","${r.learningPreferences ? r.learningPreferences.join('; ') : 'N/A'}","${r.understanding || 'N/A'}","${r.interests ? r.interests.join('; ') : 'N/A'}","${r.challenges ? r.challenges.replace(/"/g, '""') : 'N/A'}","${r.goals ? r.goals.replace(/"/g, '""') : 'N/A'}","${r.timestamp || 'N/A'}","${r.notes || ''}"`
+                        )
+                    ].join('\n');
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'outreach_responses.csv';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
             } catch (error) {
-                console.error('Error loading support data:', error.message);
+                console.error('Error loading analytics:', error.message);
             }
         }
 
-        // Status filter
-        document.getElementById('status-filter').addEventListener('change', (e) => {
-            loadSupportData(e.target.value);
+        // Search and filter
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            loadAnalytics(e.target.value, document.getElementById('experience-filter').value);
+        });
+        document.getElementById('experience-filter').addEventListener('change', (e) => {
+            loadAnalytics(document.getElementById('search-input').value, e.target.value);
         });
 
         // Success message
