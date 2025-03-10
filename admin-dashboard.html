@@ -28,7 +28,6 @@
             flex-direction: column;
         }
 
-        /* Header */
         .header-container {
             background: var(--dark-bg);
             padding: 20px 30px;
@@ -109,16 +108,21 @@
             background: #c53030;
         }
 
-        /* Sidebar */
+        .main-container {
+            display: flex;
+            flex: 1;
+        }
+
         .sidebar {
             width: 250px;
             background: var(--dark-bg);
             padding: 20px;
             position: fixed;
-            top: 100px;
+            top: 100px; /* Adjusted for header height */
             bottom: 0;
             box-shadow: 2px 0 12px var(--shadow);
             overflow-y: auto;
+            z-index: 900;
         }
 
         .sidebar a {
@@ -138,75 +142,95 @@
             padding-left: 20px;
         }
 
-        /* Main Content */
         .content {
-            margin-left: 250px;
+            margin-left: 250px; /* Matches sidebar width */
             padding: 30px;
-            flex-grow: 1;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
         }
 
-        .card {
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
             background: var(--dark-bg);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 12px var(--shadow);
-            transition: transform 0.3s;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card:hover {
+        .metric-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 24px var(--shadow);
         }
 
-        .card h3 {
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .metric-card h3 {
             font-family: 'Poppins', sans-serif;
             font-size: 18px;
             color: var(--primary-color);
-            margin: 0 0 15px 0;
+            margin: 0 0 10px 0;
+            position: relative;
+            z-index: 1;
         }
 
-        .card p {
-            font-size: 24px;
-            margin: 0;
+        .metric-card .value {
+            font-size: 32px;
+            font-weight: bold;
             color: var(--text-light);
+            position: relative;
+            z-index: 1;
         }
 
-        .card span {
-            font-size: 14px;
-            color: #a0aec0;
-        }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
+                width: 200px;
+                top: 80px;
+            }
+
+            .content {
+                margin-left: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: static;
                 width: 100%;
-                height: auto;
-                position: relative;
-                top: 0;
                 box-shadow: none;
             }
 
             .content {
                 margin-left: 0;
                 padding: 20px;
-            }
-
-            .header-container {
-                padding: 15px;
-            }
-
-            .logo-container img {
-                width: 50px;
-                height: 50px;
-            }
-
-            .logo-text h1 {
-                font-size: 18px;
             }
         }
     </style>
@@ -228,30 +252,33 @@
         </div>
     </div>
 
-    <div class="sidebar">
-        <a href="admin-dashboard.html" class="active">Dashboard</a>
-        <a href="admin-users.html">User Management</a>
-        <a href="admin-outreach.html">Outreach Analytics</a>
-        <a href="admin-support.html">Support Tickets</a>
-        <a href="admin-create.html">Create Admin</a>
-    </div>
+    <div class="main-container">
+        <div class="sidebar">
+            <a href="admin-dashboard.html" class="active">Dashboard</a>
+            <a href="admin-users.html">User Management</a>
+            <a href="admin-outreach.html">Outreach Analytics</a>
+            <a href="admin-support.html">Support Tickets</a>
+            <a href="admin-create.html">Create Admin</a>
+        </div>
 
-    <div class="content">
-        <div class="dashboard-grid">
-            <div class="card">
-                <h3>Total Users</h3>
-                <p id="total-users">0</p>
-                <span>Registered in UserSignUpData</span>
-            </div>
-            <div class="card">
-                <h3>Outreach Responses</h3>
-                <p id="outreach-responses">0</p>
-                <span>From OutreachResponse</span>
-            </div>
-            <div class="card">
-                <h3>Support Tickets</h3>
-                <p id="support-tickets">0</p>
-                <span>Pending in UserSupport</span>
+        <div class="content">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Total Users</h3>
+                    <div class="value" id="total-users">0</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Outreach Responses</h3>
+                    <div class="value" id="outreach-responses">0</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Support Issues</h3>
+                    <div class="value" id="support-issues">0</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Pending Support Tickets</h3>
+                    <div class="value" id="pending-tickets">0</div>
+                </div>
             </div>
         </div>
     </div>
@@ -260,27 +287,28 @@
         import { auth } from './firebase.js';
         import { db } from './firebase.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js';
-        import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
+        import { collection, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
 
-        // Auth state check
+        // Auth check and profile update
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const adminDocRef = doc(db, 'Admins', user.uid);
                 const adminDoc = await getDoc(adminDocRef);
                 if (adminDoc.exists() && adminDoc.data().isAdmin) {
-                    document.getElementById('profile-name').textContent = user.email;
-                    document.getElementById('profile-pic').textContent = user.email[0].toUpperCase();
+                    // Fetch user details from UserSignUpData for name
+                    const userDocRef = doc(db, 'UserSignUpData', user.uid);
+                    const userDoc = await getDoc(userDocRef);
+                    let firstName = 'Admin';
+                    let lastName = '';
+                    if (userDoc.exists()) {
+                        firstName = userDoc.data().firstName || 'Admin';
+                        lastName = userDoc.data().lastName || '';
+                    }
+                    document.getElementById('profile-name').textContent = `${firstName} ${lastName}`.trim();
+                    document.getElementById('profile-pic').textContent = `${firstName[0]}${lastName ? lastName[0] : ''}`.toUpperCase();
 
-                    // Fetch dashboard stats
-                    const usersSnapshot = await getDocs(collection(db, 'UserSignUpData'));
-                    document.getElementById('total-users').textContent = usersSnapshot.size;
-
-                    const outreachSnapshot = await getDocs(collection(db, 'OutreachResponse'));
-                    document.getElementById('outreach-responses').textContent = outreachSnapshot.size;
-
-                    const supportQuery = query(collection(db, 'UserSupport'), where('status', '==', 'Pending'));
-                    const supportSnapshot = await getDocs(supportQuery);
-                    document.getElementById('support-tickets').textContent = supportSnapshot.size;
+                    // Load metrics
+                    loadMetrics();
                 } else {
                     window.location.href = 'admin-login.html';
                 }
@@ -288,6 +316,30 @@
                 window.location.href = 'admin-login.html';
             }
         });
+
+        // Load dashboard metrics
+        async function loadMetrics() {
+            try {
+                // Total Users
+                const usersSnapshot = await getDocs(collection(db, 'UserSignUpData'));
+                document.getElementById('total-users').textContent = usersSnapshot.size;
+
+                // Outreach Responses
+                const outreachSnapshot = await getDocs(collection(db, 'OutreachResponse'));
+                document.getElementById('outreach-responses').textContent = outreachSnapshot.size;
+
+                // Support Issues
+                const supportSnapshot = await getDocs(collection(db, 'UserSupport'));
+                document.getElementById('support-issues').textContent = supportSnapshot.size;
+
+                // Pending Support Tickets
+                const pendingSnapshot = await getDocs(collection(db, 'UserSupport'));
+                const pendingCount = pendingSnapshot.docs.filter(doc => doc.data().status === 'Pending').length;
+                document.getElementById('pending-tickets').textContent = pendingCount;
+            } catch (error) {
+                console.error('Error loading metrics:', error.message);
+            }
+        }
 
         // Logout function
         function logout() {
