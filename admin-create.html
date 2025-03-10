@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Admin | Data Safari Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMyAydjE4aDE4VjJIM1ptMTUgMTZoLTFWMTBoMVYxNlpNMTMgMTZoLTFWOGgxVjE2Wk0xMSAxNmgxVjZhMVYxNlpNOSAxNmgxVjRhMVYxNlpNNyAxNmgxVjhoMVYxNlpNNSAxNmgxVjZhMVYxNiIgc3Ryb2kePSIjMzQ5OERCIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --dark-bg: #2d3748;
+            --darker-bg: #1a202c;
+            --text-light: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: var(--darker-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header and Sidebar styles copied from admin-dashboard.html */
+        .header-container {
+            background: var(--dark-bg);
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-text h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            margin: 0;
+            color: var(--text-light);
+        }
+
+        .profile-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .profile-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+        }
+
+        .logout-btn {
+            background: #e53e3e;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c53030;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--dark-bg);
+            padding: 20px;
+            position: fixed;
+            top: 100px;
+            bottom: 0;
+            box-shadow: 2px 0 12px var(--shadow);
+            overflow-y: auto;
+        }
+
+        .sidebar a {
+            display: block;
+            color: var(--text-light);
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: background 0.3s, padding-left 0.3s;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background: var(--primary-color);
+            padding-left: 20px;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        .form-container {
+            background: var(--dark-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px var(--shadow);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-container h2 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .form-group button {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .form-group button:hover {
+            background: #2980b9;
+        }
+
+        .success-message, .error-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #27ae60;
+            color: white;
+        }
+
+        .error-message {
+            background: #e53e3e;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                margin-left: 0;
+            }
+
+            .form-container {
+                padding: 20px;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="https://github.com/Sandrakimiring/Research-methodology-project-/raw/main/841acb4a-e416-448b-a72e-31bb2ecc746d.jpeg" alt="Data Safari Logo">
+                <div class="logo-text">
+                    <h1>Admin Dashboard</h1>
+                </div>
+            </div>
+            <div class="profile-container">
+                <div class="profile-pic" id="profile-pic"></div>
+                <span class="profile-name" id="profile-name">Loading...</span>
+                <button class="logout-btn" onclick="logout()">Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <a href="admin-dashboard.html">Dashboard</a>
+        <a href="admin-users.html">User Management</a>
+        <a href="admin-outreach.html">Outreach Analytics</a>
+        <a href="admin-support.html">Support Tickets</a>
+        <a href="admin-create.html" class="active">Create Admin</a>
+    </div>
+
+    <div class="content">
+        <div class="form-container">
+            <h2>Promote User to Admin</h2>
+            <form id="create-admin-form">
+                <div class="form-group">
+                    <label for="admin-email">Select User Email</label>
+                    <select id="admin-email" required>
+                        <option value="">-- Select a User --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Promote to Admin</button>
+                </div>
+            </form>
+            <div class="success-message" id="success-message">User promoted to admin successfully!</div>
+            <div class="error-message" id="error-message">Failed to promote user.</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from './firebase.js';
+        import { db } from './firebase.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js';
+        import { collection, getDocs, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
+
+        // Auth check
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const adminDocRef = doc(db, 'Admins', user.uid);
+                const adminDoc = await getDoc(adminDocRef);
+                if (adminDoc.exists() && adminDoc.data().isAdmin) {
+                    document.getElementById('profile-name').textContent = user.email;
+                    document.getElementById('profile-pic').textContent = user.email[0].toUpperCase();
+
+                    // Populate email dropdown
+                    const emailSelect = document.getElementById('admin-email');
+                    const usersSnapshot = await getDocs(collection(db, 'UserSignUpData'));
+                    const adminSnapshot = await getDocs(collection(db, 'Admins'));
+                    const adminEmails = adminSnapshot.docs.map(doc => doc.data().email);
+
+                    usersSnapshot.forEach(doc => {
+                        const userData = doc.data();
+                        const email = userData.email;
+                        if (email && !adminEmails.includes(email)) { // Exclude existing admins
+                            const option = document.createElement('option');
+                            option.value = doc.id; // Use UID as value
+                            option.textContent = email;
+                            emailSelect.appendChild(option);
+                        }
+                    });
+                } else {
+                    window.location.href = 'admin-login.html';
+                }
+            } else {
+                window.location.href = 'admin-login.html';
+            }
+        });
+
+        // Form submission
+        const createForm = document.getElementById('create-admin-form');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+
+        createForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const selectedUid = document.getElementById('admin-email').value;
+            const selectedEmail = document.getElementById('admin-email').options[document.getElementById('admin-email').selectedIndex].text;
+
+            if (!selectedUid) {
+                errorMessage.textContent = 'Please select a user.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => errorMessage.style.display = 'none', 3000);
+                return;
+            }
+
+            try {
+                // Check if already an admin
+                const adminDocRef = doc(db, 'Admins', selectedUid);
+                const adminDoc = await getDoc(adminDocRef);
+                if (adminDoc.exists()) {
+                    throw new Error('User is already an admin.');
+                }
+
+                // Promote to admin
+                await setDoc(doc(db, 'Admins', selectedUid), {
+                    isAdmin: true,
+                    email: selectedEmail,
+                    createdAt: new Date().toISOString()
+                });
+
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    window.location.reload(); // Refresh to update dropdown
+                }, 3000);
+            } catch (error) {
+                console.error('Error promoting admin:', error.message);
+                errorMessage.textContent = `Failed to promote user: ${error.message}`;
+                errorMessage.style.display = 'block';
+                setTimeout(() => errorMessage.style.display = 'none', 3000);
+            }
+        });
+
+        // Logout function
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.href = 'admin-login.html';
+            }).catch((error) => {
+                console.error('Logout error:', error.message);
+                alert('Failed to log out. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>
