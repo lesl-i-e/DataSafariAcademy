@@ -14,6 +14,7 @@
             --darker-bg: #1a202c;
             --text-light: #e2e8f0;
             --shadow: rgba(0, 0, 0, 0.3);
+            --divider-color: rgba(52, 152, 219, 0.3);
             --transition: all 0.3s ease;
         }
 
@@ -111,6 +112,7 @@
         .main-container {
             display: flex;
             flex: 1;
+            position: relative;
         }
 
         .sidebar {
@@ -118,7 +120,7 @@
             background: var(--dark-bg);
             padding: 20px;
             position: fixed;
-            top: 100px; /* Adjusted for header height */
+            top: 100px; /* Matches header height */
             bottom: 0;
             box-shadow: 2px 0 12px var(--shadow);
             overflow-y: auto;
@@ -142,8 +144,19 @@
             padding-left: 20px;
         }
 
+        .divider {
+            width: 4px;
+            background: var(--divider-color);
+            position: fixed;
+            left: 250px; /* Matches sidebar width */
+            top: 100px; /* Matches header height */
+            bottom: 0;
+            z-index: 950;
+            box-shadow: 0 0 10px var(--divider-color);
+        }
+
         .content {
-            margin-left: 250px; /* Matches sidebar width */
+            margin-left: 254px; /* Sidebar width + divider width */
             padding: 30px;
             flex: 1;
         }
@@ -308,8 +321,12 @@
                 top: 80px;
             }
 
+            .divider {
+                left: 200px;
+            }
+
             .content {
-                margin-left: 200px;
+                margin-left: 204px;
             }
         }
 
@@ -322,6 +339,10 @@
                 position: static;
                 width: 100%;
                 box-shadow: none;
+            }
+
+            .divider {
+                display: none; /* Hide divider on mobile */
             }
 
             .content {
@@ -360,7 +381,7 @@
             <a href="admin-support.html">Support Tickets</a>
             <a href="admin-create.html">Create Admin</a>
         </div>
-
+        <div class="divider"></div>
         <div class="content">
             <div class="search-bar">
                 <input type="text" id="search-input" placeholder="Search users by email...">
@@ -412,7 +433,7 @@
         import { auth } from './firebase.js';
         import { db } from './firebase.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js';
-        import { collection, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
+        import { collection, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebaseとしjs/10.10.0/firebase-firestore.js';
 
         // Auth check and profile update
         onAuthStateChanged(auth, async (user) => {
