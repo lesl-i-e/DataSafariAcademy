@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@300&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMyAydjE4aDE4VjJIM1ptMTUgMTZoLTFWMTBoMVYxNlpNMTMgMTZoLTFWOGgxVjE2Wk0xMSAxNmgxVjZhMVYxNlpNOSAxNmgxVjRhMVYxNlpNNyAxNmgxVjhoMVYxNlpNNSAxNmgxVjZhMVYxNiIgc3Ryb2tlPSIjMzQ5OERCIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary-color: #3498db;
@@ -14,6 +15,7 @@
             --darker-bg: #1a202c;
             --text-light: #e2e8f0;
             --shadow: rgba(0, 0, 0, 0.3);
+            --divider-color: rgba(52, 152, 219, 0.3);
             --transition: all 0.3s ease;
         }
 
@@ -28,7 +30,6 @@
             flex-direction: column;
         }
 
-        /* Header and Sidebar styles copied from previous pages */
         .header-container {
             background: var(--dark-bg);
             padding: 20px 30px;
@@ -109,15 +110,22 @@
             background: #c53030;
         }
 
+        .main-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
         .sidebar {
             width: 250px;
             background: var(--dark-bg);
             padding: 20px;
             position: fixed;
-            top: 100px;
+            top: 100px; /* Matches header height */
             bottom: 0;
             box-shadow: 2px 0 12px var(--shadow);
             overflow-y: auto;
+            z-index: 900;
         }
 
         .sidebar a {
@@ -137,11 +145,46 @@
             padding-left: 20px;
         }
 
-        /* Content */
+        .divider {
+            width: 4px;
+            background: var(--divider-color);
+            position: fixed;
+            left: 250px; /* Matches sidebar width */
+            top: 100px; /* Matches header height */
+            bottom: 0;
+            z-index: 950;
+            box-shadow: 0 0 10px var(--divider-color);
+        }
+
         .content {
-            margin-left: 250px;
+            margin-left: 254px; /* Sidebar width + divider width */
             padding: 30px;
-            flex-grow: 1;
+            flex: 1;
+        }
+
+        .visualization-card {
+            background: var(--dark-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px var(--shadow);
+            margin-bottom: 30px;
+            transition: transform 0.3s;
+        }
+
+        .visualization-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .visualization-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            color: var(--primary-color);
+            margin: 0 0 15px 0;
+        }
+
+        .visualization-card canvas {
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         .controls {
@@ -151,7 +194,7 @@
             flex-wrap: wrap;
         }
 
-        .controls input, .controls select {
+        .controls select {
             padding: 10px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 5px;
@@ -160,68 +203,51 @@
             font-size: 14px;
         }
 
-        .tickets-table {
+        .support-table {
             width: 100%;
             background: var(--dark-bg);
             border-radius: 10px;
             box-shadow: 0 4px 12px var(--shadow);
             overflow: hidden;
+            transition: transform 0.3s;
         }
 
-        .tickets-table table {
+        .support-table:hover {
+            transform: translateY(-5px);
+        }
+
+        .support-table table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .tickets-table th, .tickets-table td {
+        .support-table th, .support-table td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .tickets-table th {
+        .support-table th {
             background: var(--primary-color);
             font-family: 'Poppins', sans-serif;
             font-size: 16px;
         }
 
-        .tickets-table td {
+        .support-table td {
             font-size: 14px;
         }
 
-        .tickets-table tr:hover {
+        .support-table tr:hover {
             background: rgba(255, 255, 255, 0.05);
         }
 
         .status-select {
             padding: 5px;
-            border: none;
-            background: #27ae60;
-            color: white;
-            border-radius: 5px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .status-select.pending {
-            background: #e53e3e;
-        }
-
-        .status-select.in-progress {
-            background: #f1c40f;
-            color: #333;
-        }
-
-        .notes-input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 5px;
             background: rgba(255, 255, 255, 0.05);
             color: var(--text-light);
             font-size: 14px;
-            resize: vertical;
         }
 
         .success-message {
@@ -237,11 +263,41 @@
         }
 
         @media (max-width: 768px) {
-            .content {
-                margin-left: 0;
+            .sidebar {
+                width: 200px;
+                top: 80px;
             }
 
-            .tickets-table {
+            .divider {
+                left: 200px;
+            }
+
+            .content {
+                margin-left: 204px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: static;
+                width: 100%;
+                box-shadow: none;
+            }
+
+            .divider {
+                display: none;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .support-table {
                 overflow-x: auto;
             }
         }
@@ -264,40 +320,45 @@
         </div>
     </div>
 
-    <div class="sidebar">
-        <a href="admin-dashboard.html">Dashboard</a>
-        <a href="admin-users.html">User Management</a>
-        <a href="admin-outreach.html">Outreach Analytics</a>
-        <a href="admin-support.html" class="active">Support Tickets</a>
-        <a href="admin-create.html">Create Admin</a>
-    </div>
-
-    <div class="content">
-        <div class="controls">
-            <input type="text" id="search-input" placeholder="Search by email or issue...">
-            <select id="status-filter">
-                <option value="">All Statuses</option>
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Resolved">Resolved</option>
-            </select>
+    <div class="main-container">
+        <div class="sidebar">
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="admin-users.html">User Management</a>
+            <a href="admin-outreach.html">Outreach Analytics</a>
+            <a href="admin-support.html" class="active">Support Tickets</a>
+            <a href="admin-create.html">Create Admin</a>
         </div>
+        <div class="divider"></div>
+        <div class="content">
+            <div class="visualization-card">
+                <h3>Support Issues by Type</h3>
+                <canvas id="issueTypeChart"></canvas>
+            </div>
 
-        <div class="tickets-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>First Name</th>
-                        <th>Category</th>
-                        <th>Issue</th>
-                        <th>Submitted</th>
-                        <th>Status</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody id="tickets-table-body"></tbody>
-            </table>
+            <div class="controls">
+                <select id="status-filter">
+                    <option value="">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                </select>
+            </div>
+
+            <div class="support-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User Email</th>
+                            <th>Type</th>
+                            <th>Subject</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="support-table-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -307,17 +368,28 @@
         import { auth } from './firebase.js';
         import { db } from './firebase.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js';
-        import { collection, getDocs, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
+        import { collection, getDocs, doc, updateDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
 
-        // Auth check
+        // Auth check and profile update
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const adminDocRef = doc(db, 'Admins', user.uid);
                 const adminDoc = await getDoc(adminDocRef);
                 if (adminDoc.exists() && adminDoc.data().isAdmin) {
-                    document.getElementById('profile-name').textContent = user.email;
-                    document.getElementById('profile-pic').textContent = user.email[0].toUpperCase();
-                    loadTickets();
+                    // Fetch user details for profile
+                    const userDocRef = doc(db, 'UserSignUpData', user.uid);
+                    const userDoc = await getDoc(userDocRef);
+                    let firstName = 'Admin';
+                    let lastName = '';
+                    if (userDoc.exists()) {
+                        firstName = userDoc.data().firstName || 'Admin';
+                        lastName = userDoc.data().lastName || '';
+                    }
+                    document.getElementById('profile-name').textContent = `${firstName} ${lastName}`.trim();
+                    document.getElementById('profile-pic').textContent = `${firstName[0]}${lastName ? lastName[0] : ''}`.toUpperCase();
+
+                    // Load support data
+                    loadSupportData();
                 } else {
                     window.location.href = 'admin-login.html';
                 }
@@ -326,79 +398,86 @@
             }
         });
 
-        // Load tickets
-        async function loadTickets(search = '', statusFilter = '') {
-            const ticketsSnapshot = await getDocs(collection(db, 'UserSupport'));
-            const tickets = ticketsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Load support data and visualization
+        async function loadSupportData(statusFilter = '') {
+            try {
+                const supportSnapshot = await getDocs(collection(db, 'UserSupport'));
+                const supportTickets = supportSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            // Filter tickets
-            const filteredTickets = tickets.filter(t => 
-                (t.email.toLowerCase().includes(search.toLowerCase()) || 
-                 t.issue.toLowerCase().includes(search.toLowerCase())) &&
-                (!statusFilter || t.status === statusFilter)
-            );
+                // Filter tickets
+                const filteredTickets = supportTickets.filter(ticket => 
+                    !statusFilter || ticket.status === statusFilter
+                );
 
-            // Table
-            const tbody = document.getElementById('tickets-table-body');
-            tbody.innerHTML = '';
-            filteredTickets.forEach(t => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${t.email}</td>
-                    <td>${t.firstName}</td>
-                    <td>${t.category}</td>
-                    <td>${t.issue}</td>
-                    <td>${new Date(t.timestamp).toLocaleString()}</td>
-                    <td>
-                        <select class="status-select ${t.status.toLowerCase().replace(' ', '-')}" data-id="${t.id}">
-                            <option value="Pending" ${t.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                            <option value="In Progress" ${t.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                            <option value="Resolved" ${t.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
-                        </select>
-                    </td>
-                    <td><textarea class="notes-input" data-id="${t.id}" placeholder="Add notes...">${t.notes || ''}</textarea></td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // Status change listeners
-            document.querySelectorAll('.status-select').forEach(select => {
-                select.addEventListener('change', async (e) => {
-                    const id = e.target.dataset.id;
-                    const status = e.target.value;
-                    try {
-                        await updateDoc(doc(db, 'UserSupport', id), { status });
-                        e.target.className = `status-select ${status.toLowerCase().replace(' ', '-')}`;
-                        showSuccess('Status updated!');
-                    } catch (error) {
-                        console.error('Error updating status:', error.message);
-                        alert('Failed to update status: ' + error.message);
+                // Pie chart for issue types
+                const typeCounts = filteredTickets.reduce((acc, ticket) => {
+                    acc[ticket.type] = (acc[ticket.type] || 0) + 1;
+                    return acc;
+                }, {});
+                new Chart(document.getElementById('issueTypeChart'), {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(typeCounts),
+                        datasets: [{
+                            data: Object.values(typeCounts),
+                            backgroundColor: ['#3498db', '#27ae60', '#e53e3e', '#f1c40f'],
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        plugins: { 
+                            legend: { 
+                                position: 'bottom',
+                                labels: { color: '#e2e8f0' } 
+                            } 
+                        } 
                     }
                 });
-            });
 
-            // Notes listeners
-            document.querySelectorAll('.notes-input').forEach(input => {
-                input.addEventListener('blur', async (e) => {
-                    const id = e.target.dataset.id;
-                    const notes = e.target.value.trim();
-                    try {
-                        await updateDoc(doc(db, 'UserSupport', id), { notes });
-                        showSuccess('Notes saved!');
-                    } catch (error) {
-                        console.error('Error saving notes:', error.message);
-                        alert('Failed to save notes: ' + error.message);
-                    }
+                // Table
+                const tbody = document.getElementById('support-table-body');
+                tbody.innerHTML = '';
+                filteredTickets.forEach(ticket => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${ticket.email || 'N/A'}</td>
+                        <td>${ticket.type || 'N/A'}</td>
+                        <td>${ticket.subject || 'N/A'}</td>
+                        <td>${ticket.description || 'N/A'}</td>
+                        <td>${ticket.timestamp ? new Date(ticket.timestamp).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            <select class="status-select" data-id="${ticket.id}">
+                                <option value="Pending" ${ticket.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="In Progress" ${ticket.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="Resolved" ${ticket.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                            </select>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
                 });
-            });
+
+                // Status update listeners
+                document.querySelectorAll('.status-select').forEach(select => {
+                    select.addEventListener('change', async (e) => {
+                        const id = e.target.dataset.id;
+                        const status = e.target.value;
+                        try {
+                            await updateDoc(doc(db, 'UserSupport', id), { status });
+                            showSuccess('Status updated!');
+                        } catch (error) {
+                            console.error('Error updating status:', error.message);
+                            alert('Failed to update status: ' + error.message);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading support data:', error.message);
+            }
         }
 
-        // Search and filter
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            loadTickets(e.target.value, document.getElementById('status-filter').value);
-        });
+        // Status filter
         document.getElementById('status-filter').addEventListener('change', (e) => {
-            loadTickets(document.getElementById('search-input').value, e.target.value);
+            loadSupportData(e.target.value);
         });
 
         // Success message
