@@ -28,7 +28,6 @@
             flex-direction: column;
         }
 
-        /* Header and Sidebar styles copied from previous pages */
         .header-container {
             background: var(--dark-bg);
             padding: 20px 30px;
@@ -109,15 +108,21 @@
             background: #c53030;
         }
 
+        .main-container {
+            display: flex;
+            flex: 1;
+        }
+
         .sidebar {
             width: 250px;
             background: var(--dark-bg);
             padding: 20px;
             position: fixed;
-            top: 100px;
+            top: 100px; /* Adjusted for header height */
             bottom: 0;
             box-shadow: 2px 0 12px var(--shadow);
             overflow-y: auto;
+            z-index: 900;
         }
 
         .sidebar a {
@@ -137,11 +142,10 @@
             padding-left: 20px;
         }
 
-        /* Content */
         .content {
-            margin-left: 250px;
+            margin-left: 250px; /* Matches sidebar width */
             padding: 30px;
-            flex-grow: 1;
+            flex: 1;
         }
 
         .search-bar {
@@ -171,6 +175,11 @@
             border-radius: 10px;
             box-shadow: 0 4px 12px var(--shadow);
             overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .users-table:hover {
+            transform: translateY(-5px);
         }
 
         .users-table table {
@@ -216,7 +225,6 @@
             color: #e53e3e;
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -295,8 +303,30 @@
         }
 
         @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+                top: 80px;
+            }
+
+            .content {
+                margin-left: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                position: static;
+                width: 100%;
+                box-shadow: none;
+            }
+
             .content {
                 margin-left: 0;
+                padding: 20px;
             }
 
             .users-table {
@@ -322,30 +352,32 @@
         </div>
     </div>
 
-    <div class="sidebar">
-        <a href="admin-dashboard.html">Dashboard</a>
-        <a href="admin-users.html" class="active">User Management</a>
-        <a href="admin-outreach.html">Outreach Analytics</a>
-        <a href="admin-support.html">Support Tickets</a>
-        <a href="admin-create.html">Create Admin</a>
-    </div>
-
-    <div class="content">
-        <div class="search-bar">
-            <input type="text" id="search-input" placeholder="Search users by email...">
+    <div class="main-container">
+        <div class="sidebar">
+            <a href="admin-dashboard.html">Dashboard</a>
+            <a href="admin-users.html" class="active">User Management</a>
+            <a href="admin-outreach.html">Outreach Analytics</a>
+            <a href="admin-support.html">Support Tickets</a>
+            <a href="admin-create.html">Create Admin</a>
         </div>
-        <div class="users-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="users-table-body"></tbody>
-            </table>
+
+        <div class="content">
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="Search users by email...">
+            </div>
+            <div class="users-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -380,16 +412,27 @@
         import { auth } from './firebase.js';
         import { db } from './firebase.js';
         import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js';
-        import { collection, getDocs, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
+        import { collection, getDocs, doc, updateDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
 
-        // Auth check
+        // Auth check and profile update
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const adminDocRef = doc(db, 'Admins', user.uid);
                 const adminDoc = await getDoc(adminDocRef);
                 if (adminDoc.exists() && adminDoc.data().isAdmin) {
-                    document.getElementById('profile-name').textContent = user.email;
-                    document.getElementById('profile-pic').textContent = user.email[0].toUpperCase();
+                    // Fetch user details for profile
+                    const userDocRef = doc(db, 'UserSignUpData', user.uid);
+                    const userDoc = await getDoc(userDocRef);
+                    let firstName = 'Admin';
+                    let lastName = '';
+                    if (userDoc.exists()) {
+                        firstName = userDoc.data().firstName || 'Admin';
+                        lastName = userDoc.data().lastName || '';
+                    }
+                    document.getElementById('profile-name').textContent = `${firstName} ${lastName}`.trim();
+                    document.getElementById('profile-pic').textContent = `${firstName[0]}${lastName ? lastName[0] : ''}`.toUpperCase();
+
+                    // Load users
                     loadUsers();
                 } else {
                     window.location.href = 'admin-login.html';
@@ -401,12 +444,16 @@
 
         // Load users
         async function loadUsers(filter = '') {
-            const tbody = document.getElementById('users-table-body');
-            tbody.innerHTML = '';
-            const usersSnapshot = await getDocs(collection(db, 'UserSignUpData'));
-            usersSnapshot.forEach(doc => {
-                const userData = doc.data();
-                if (userData.email.toLowerCase().includes(filter.toLowerCase())) {
+            try {
+                const tbody = document.getElementById('users-table-body');
+                tbody.innerHTML = '';
+                const usersSnapshot = await getDocs(collection(db, 'UserSignUpData'));
+                const filteredUsers = usersSnapshot.docs.filter(doc => 
+                    doc.data().email.toLowerCase().includes(filter.toLowerCase())
+                );
+
+                filteredUsers.forEach(doc => {
+                    const userData = doc.data();
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${userData.email}</td>
@@ -418,16 +465,18 @@
                         </td>
                     `;
                     tbody.appendChild(tr);
-                }
-            });
+                });
 
-            // Add event listeners for edit and delete
-            document.querySelectorAll('.edit').forEach(btn => {
-                btn.addEventListener('click', () => editUser(btn.dataset.uid));
-            });
-            document.querySelectorAll('.delete').forEach(btn => {
-                btn.addEventListener('click', () => deleteUser(btn.dataset.uid));
-            });
+                // Add event listeners for edit and delete
+                document.querySelectorAll('.edit').forEach(btn => {
+                    btn.addEventListener('click', () => editUser(btn.dataset.uid));
+                });
+                document.querySelectorAll('.delete').forEach(btn => {
+                    btn.addEventListener('click', () => deleteUser(btn.dataset.uid));
+                });
+            } catch (error) {
+                console.error('Error loading users:', error.message);
+            }
         }
 
         // Search functionality
@@ -476,7 +525,6 @@
             if (confirm('Are you sure you want to delete this user?')) {
                 try {
                     await deleteDoc(doc(db, 'UserSignUpData', uid));
-                    // Note: This doesn't delete the Firebase Auth user; add if needed
                     showSuccess('User deleted successfully!');
                     loadUsers(document.getElementById('search-input').value);
                 } catch (error) {
